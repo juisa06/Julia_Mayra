@@ -6,59 +6,99 @@ using Random = UnityEngine.Random;
 
 public class Inimigo : MonoBehaviour
 {
+    public GameObject Ak;
+    public GameObject blood;
+    public bool isDead;
     public float moveSpeed = 3f;
     public float visionRange = 5f;
     public float fireRate = 1f;
     public GameObject bulletPrefab;
     public Transform firePoint;
     public int life = 10;
+    private Animator anim;
+    private bool weaponDropped = false;
 
     private Transform player;
     private bool playerInSight = false;
     private float nextFireTime = 0f;
     private Rigidbody2D rb;
     private Vector2 patrolDirection;
+    private int BalaArma;
+    public float Recarga;
+    private int balaAK = 2;
+    private int balaUMP = 1;
+    private int balaEAGLE = 0;
+    private int balaAKGLOCK =3;
 
+    public bool EnemyAK;
+    public bool EnemyUMP;
+    public bool EnemyEAGLE;
+    public bool EnemyGLOCK;
+
+    private EnemyManager enemyManager;
     void Start()
     {
+        enemyManager = GameObject.FindObjectOfType<EnemyManager>();
+        enemyManager.AddEnemy(gameObject);
+        anim = GetComponent<Animator>();
         player = GameObject.FindGameObjectWithTag("Player").transform;
         rb = GetComponent<Rigidbody2D>();
         SetRandomPatrolDirection();
+        if (EnemyAK == true)
+        {
+            BalaArma = balaAK;
+        }
+        else if (EnemyUMP == true)
+        {
+            BalaArma = balaUMP;
+        }
+        else if (EnemyEAGLE == true)
+        {
+            BalaArma = balaEAGLE;
+        }
+        else if (EnemyGLOCK == true)
+        {
+            BalaArma = balaAKGLOCK;
+        }
     }
 
     void Update()
     {
-        dead();
-        if (Vector2.Distance(transform.position, player.position) <= visionRange)
+        if (isDead == false)
         {
-            playerInSight = true;
-            Vector2 direction = (player.position - transform.position).normalized;
-            transform.up = direction;
-            if (Time.time >= nextFireTime)
-            {
-                StartCoroutine("Tiro");
-                nextFireTime = Time.time + 1f / fireRate;
+            dead(); 
+            if (Vector2.Distance(transform.position, player.position) <= visionRange) 
+            { 
+                playerInSight = true; 
+                Vector2 direction = (player.position - transform.position).normalized; 
+                transform.up = direction;
+                if (Time.time >= nextFireTime)
+                {
+                    StartCoroutine("Tiro");
+                    nextFireTime = Time.time + 1f / fireRate;
+                }
             }
+            else 
+            { 
+                playerInSight = false;
+            }
+            Patrol();
         }
-        else
-        {
-            playerInSight = false;
-        }
-        Patrol();
+
     }
 
     void Patrol()
     {
-        if (!playerInSight) // Verifica se o jogador está à vista
+        if (!playerInSight) 
         {
-            RaycastHit2D hit = Physics2D.Raycast(transform.position, patrolDirection, 1f); // Verifica se há obstáculos à frente
+            RaycastHit2D hit = Physics2D.Raycast(transform.position, patrolDirection, 1f); 
             if (hit.collider != null && hit.collider.CompareTag("Wall"))
             {
-                SetRandomPatrolDirection(); // Se houver uma parede à frente, escolhe uma nova direção aleatória
+                SetRandomPatrolDirection(); 
             }
             else
             {
-                rb.MovePosition(rb.position + patrolDirection * moveSpeed * Time.fixedDeltaTime); // Move-se na direção atual
+                rb.MovePosition(rb.position + patrolDirection * moveSpeed * Time.fixedDeltaTime); 
             }
         }
     }
@@ -73,16 +113,40 @@ public class Inimigo : MonoBehaviour
         RaycastHit2D hit = Physics2D.Raycast(firePoint.position, transform.up, visionRange);
         if (hit.collider == null || !hit.collider.CompareTag("Wall"))
         {
-            GameObject bullet = Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
-            Rigidbody2D bulletRb = bullet.GetComponent<Rigidbody2D>();
-            bulletRb.velocity = transform.up * 15f;
-            yield return new WaitForSeconds(0.2f);
-            GameObject bullet2 = Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
-            Rigidbody2D bulletRb2 = bullet2.GetComponent<Rigidbody2D>();
-            bulletRb2.velocity = transform.up * 15f;
-            yield return new WaitForSeconds(1f);
-            Destroy(bullet, 2.0f);
-            Destroy(bullet2, 2.0f);
+            if (BalaArma > 0)
+            {
+                while (BalaArma >= 0)
+                {
+                    GameObject bullet = Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
+                    Rigidbody2D bulletRb = bullet.GetComponent<Rigidbody2D>();
+                    bulletRb.velocity = transform.up * 15f;
+                    yield return new WaitForSeconds(0.2f);
+                    BalaArma--;
+                    Destroy(bullet, 2.0f);
+                    if (BalaArma <= 0)
+                    {
+                        yield return new WaitForSeconds(Recarga);
+                    }
+                }
+            }
+
+            if (EnemyAK == true)
+            {
+                BalaArma = balaAK;
+            }
+            else if (EnemyUMP == true)
+            {
+                BalaArma = balaUMP;
+            }
+            else if (EnemyEAGLE == true)
+            {
+                BalaArma = balaEAGLE;
+            }
+            else if (EnemyGLOCK == true)
+            {
+                BalaArma = balaAKGLOCK;
+            }
+            
         }
     }
 
@@ -96,17 +160,38 @@ public class Inimigo : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D col)
     {
-        if (col.gameObject.tag == "Bala")
+        if (col.gameObject.layer == 7)
         {
+            anim.SetTrigger("Hit");
             life--;
+            Destroy(col.gameObject);
+        }
+        if (col.gameObject.layer == 8)
+        {
+            life = 0;
+        }
+        if (col.gameObject.layer == 9)
+        {
+            anim.SetTrigger("Hit");
+            life -= 3;
+            Destroy(col.gameObject);
         }
     }
-
     void dead()
     {
-        if (life <=0 )
+        if (life <= 0 && !isDead)
         {
-            Destroy(gameObject);
+            StopCoroutine("Tiro");
+            if (!weaponDropped)
+            {
+                GameObject Akobj = Instantiate(Ak, gameObject.transform.position, gameObject.transform.rotation);
+                weaponDropped = true;
+                GameObject Blood = Instantiate(blood, gameObject.transform.position, gameObject.transform.rotation);
+            }
+            enemyManager.EnemyDied(gameObject);
+            isDead = true;
+            anim.SetBool("Morreu", true);
+            Destroy(gameObject, 1.5f);
         }
     }
 }
