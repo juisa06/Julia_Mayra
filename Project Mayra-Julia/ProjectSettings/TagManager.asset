@@ -6,6 +6,11 @@ TagManager:
   tags:
   - Wall
   - Inimigo
+  - AWP
+  - UMP
+  - EAGLE
+  - GLOCK
+  - AK
   layers:
   - Default
   - TransparentFX
@@ -13,13 +18,13 @@ TagManager:
   - 
   - Water
   - UI
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
+  - BalaEnemy
+  - Balas
+  - AWP
+  - DEagle
+  - BALAENEMY
+  - BALAUMP/EAGLE
+  - BALAAWPENEMY
   - 
   - 
   - 
