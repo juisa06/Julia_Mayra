@@ -203,6 +203,7 @@ public class Player : MonoBehaviour
         Source.clip = Audios[n];
         Source.Play();
     }
+
     private void OnTriggerEnter2D(Collider2D col)
     {
         if (col.gameObject.layer == 10)
@@ -211,20 +212,25 @@ public class Player : MonoBehaviour
             vida--;
             Destroy(col.gameObject);
         }
+
         if (col.gameObject.layer == 12)
         {
             anim.SetTrigger("HIT");
             Destroy(col.gameObject);
-            vida-=5;
+            vida -= 5;
         }
+
         if (col.gameObject.layer == 11)
         {
             anim.SetTrigger("HIT");
             Destroy(col.gameObject);
-            vida-= 2;
+            vida -= 2;
         }
-        
-        if (col.gameObject.tag == "AK")
+    }
+
+    private void OnTriggerStay2D(Collider2D col)
+    {
+        if (col.gameObject.tag == "AK" && Input.GetKeyDown(KeyCode.E))
         {
             WeaponNumber = 0;
             IsAK = true;
@@ -243,7 +249,7 @@ public class Player : MonoBehaviour
             balas = 50;
 
         }
-        if (col.gameObject.tag == "UMP")
+        if (col.gameObject.tag == "UMP" && Input.GetKeyDown(KeyCode.E))
         {
             WeaponNumber = 1;
             IsAK = false;
@@ -261,7 +267,7 @@ public class Player : MonoBehaviour
             Destroy(col.gameObject);
             balas = 25;
         }
-        if (col.gameObject.tag == "AWP")
+        if (col.gameObject.tag == "AWP" && Input.GetKeyDown(KeyCode.E))
         {
             WeaponNumber = 2;
             IsAK = false;
@@ -279,7 +285,7 @@ public class Player : MonoBehaviour
             Destroy(col.gameObject);
             balas = 15;
         }
-        if (col.gameObject.tag == "GLOCK")
+        if (col.gameObject.tag == "GLOCK" && Input.GetKeyDown(KeyCode.E))
         {
             WeaponNumber = 3;
             IsAK = false;
@@ -297,7 +303,7 @@ public class Player : MonoBehaviour
             Destroy(col.gameObject);
             balas = 60;
         }
-        if (col.gameObject.tag == "EAGLE")
+        if (col.gameObject.tag == "EAGLE" && Input.GetKeyDown(KeyCode.E))
         {
             WeaponNumber = 4;
             IsAK = false;
