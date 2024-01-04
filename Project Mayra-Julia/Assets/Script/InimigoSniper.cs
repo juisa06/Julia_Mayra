@@ -22,11 +22,13 @@ public class InimigoSniper : MonoBehaviour
     private float nextFireTime = 0f;
     private Rigidbody2D rb;
     private Vector2 patrolDirection;
+    private AudioSource Snipersound;
 
     private EnemyManager enemyManager;
 
     void Start()
     {
+        Snipersound = GetComponent<AudioSource>();
         enemyManager = GameObject.FindObjectOfType<EnemyManager>();
         enemyManager.AddEnemy(gameObject);
         anim = GetComponent<Animator>();
@@ -96,7 +98,8 @@ public class InimigoSniper : MonoBehaviour
                 isfire = true;
                 GameObject bullet = Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
                 Rigidbody2D bulletRb = bullet.GetComponent<Rigidbody2D>();
-                bulletRb.velocity = transform.up * 15f;
+                Snipersound.Play();
+                bulletRb.velocity = transform.up * 20f;
                 yield return new WaitForSeconds(4f);
                 Destroy(bullet, 2.0f);
                 isfire = false;

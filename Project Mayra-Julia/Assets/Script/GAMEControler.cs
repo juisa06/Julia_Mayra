@@ -10,4 +10,14 @@ public class GAMEControler : MonoBehaviour
     {
         SceneManager.LoadScene(1);
     }
+
+    public void Restart()
+    {
+        SceneManager.LoadScene(2);
+    }
+
+    public void Menu()
+    {
+        SceneManager.LoadScene(0);
+    }
 }

@@ -13,8 +13,9 @@ public class Player : MonoBehaviour
     public bool IsGLOCK;
     public bool IsEAGLE;
     private bool isfire;
-    
+
     [Header("GameObjects")]
+    public GameObject armaturaOBJ;
     public GameObject UMP;
     public GameObject AK;
     public GameObject AWP;
@@ -42,6 +43,7 @@ public class Player : MonoBehaviour
     public int vida = 15;
     public int balas = 60;
     public int WeaponNumber;
+    public int Armadura = 8;
 
     [Header("Sons")] 
     public AudioClip[] Audios;
@@ -60,6 +62,15 @@ public class Player : MonoBehaviour
 
     void Update()
     {
+        if (Armadura <= 0)
+        {
+            armaturaOBJ.SetActive(false);
+        }
+
+        if (Armadura > 0)
+        {
+            armaturaOBJ.SetActive(true);
+        }
         if (balas <=0)
         {
             WeaponNumber = 5;
@@ -208,29 +219,65 @@ public class Player : MonoBehaviour
     {
         if (col.gameObject.layer == 10)
         {
-            anim.SetTrigger("HIT");
-            vida--;
-            Destroy(col.gameObject);
+            if (Armadura >0)
+            {
+                Armadura--;
+                Destroy(col.gameObject);
+            }
+            else
+            {
+                anim.SetTrigger("HIT");
+                vida--;
+                Destroy(col.gameObject);
+            }
+
         }
 
         if (col.gameObject.layer == 12)
         {
-            anim.SetTrigger("HIT");
-            Destroy(col.gameObject);
-            vida -= 5;
+            if (Armadura > 0)
+            {
+                Armadura=0;
+                Destroy(col.gameObject);
+            }
+            else
+            {
+                anim.SetTrigger("HIT");
+                Destroy(col.gameObject);
+                vida -= 5;
+            }
         }
 
         if (col.gameObject.layer == 11)
         {
-            anim.SetTrigger("HIT");
+            if (Armadura > 0)
+            {
+                Armadura -= 2;
+                Destroy(col.gameObject);
+            }
+            else
+            {
+                anim.SetTrigger("HIT");
+                Destroy(col.gameObject);
+                vida -= 2;
+            }
+        }
+
+        if (col.gameObject.tag == "Armadura")
+        {
+            Armadura = 8;
             Destroy(col.gameObject);
-            vida -= 2;
+        }
+        if (col.gameObject.tag == "Bandagem" && vida <=25 )
+        {
+            vida += 5;
+            Destroy(col.gameObject);
         }
     }
 
     private void OnTriggerStay2D(Collider2D col)
     {
-        if (col.gameObject.tag == "AK" && Input.GetKeyDown(KeyCode.E))
+        if (col.gameObject.tag == "AK" && Input.GetKey(KeyCode.E))
         {
             WeaponNumber = 0;
             IsAK = true;
@@ -249,7 +296,7 @@ public class Player : MonoBehaviour
             balas = 50;
 
         }
-        if (col.gameObject.tag == "UMP" && Input.GetKeyDown(KeyCode.E))
+        if (col.gameObject.tag == "UMP" && Input.GetKey(KeyCode.E))
         {
             WeaponNumber = 1;
             IsAK = false;
@@ -267,7 +314,7 @@ public class Player : MonoBehaviour
             Destroy(col.gameObject);
             balas = 25;
         }
-        if (col.gameObject.tag == "AWP" && Input.GetKeyDown(KeyCode.E))
+        if (col.gameObject.tag == "AWP" && Input.GetKey(KeyCode.E))
         {
             WeaponNumber = 2;
             IsAK = false;
@@ -285,7 +332,7 @@ public class Player : MonoBehaviour
             Destroy(col.gameObject);
             balas = 15;
         }
-        if (col.gameObject.tag == "GLOCK" && Input.GetKeyDown(KeyCode.E))
+        if (col.gameObject.tag == "GLOCK" && Input.GetKey(KeyCode.E))
         {
             WeaponNumber = 3;
             IsAK = false;
@@ -303,7 +350,7 @@ public class Player : MonoBehaviour
             Destroy(col.gameObject);
             balas = 60;
         }
-        if (col.gameObject.tag == "EAGLE" && Input.GetKeyDown(KeyCode.E))
+        if (col.gameObject.tag == "EAGLE" && Input.GetKey(KeyCode.E))
         {
             WeaponNumber = 4;
             IsAK = false;

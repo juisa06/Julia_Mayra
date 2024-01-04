@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -8,6 +9,7 @@ public class EnemyManager : MonoBehaviour
     public List<GameObject> Enemys = new List<GameObject>();
     public int currentSoundIndex = 11;
     public AudioClip LOOPSON;
+    public GameObject victory;
     public void AddEnemy(GameObject enemy)
     {
         Source = GetComponent<AudioSource>();
@@ -19,8 +21,14 @@ public class EnemyManager : MonoBehaviour
         {
             Enemys.Remove(enemy);
             PlayNextDeathSound();
+            if (Enemys.Count <= 0)
+            {
+                victory.SetActive(true);
+            }
         }
     }
+    
+
     private void PlayNextDeathSound()
     {
         if (deathSounds.Length > 0)
