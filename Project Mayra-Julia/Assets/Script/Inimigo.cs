@@ -27,7 +27,7 @@ public class Inimigo : MonoBehaviour
     public float Recarga;
     private int balaAK = 2;
     private int balaUMP = 1;
-    private int balaEAGLE = 0;
+    private int balaEAGLE = 1;
     private int balaAKGLOCK =3;
 
     public bool EnemyAK;
@@ -35,29 +35,42 @@ public class Inimigo : MonoBehaviour
     public bool EnemyEAGLE;
     public bool EnemyGLOCK;
 
+    public AudioClip[] Audios;
+    private AudioSource Source;
+    public int weaponsound;
+
     private EnemyManager enemyManager;
     void Start()
     {
+        Source = GetComponent<AudioSource>();
         enemyManager = GameObject.FindObjectOfType<EnemyManager>();
         enemyManager.AddEnemy(gameObject);
         anim = GetComponent<Animator>();
         player = GameObject.FindGameObjectWithTag("Player").transform;
         rb = GetComponent<Rigidbody2D>();
         SetRandomPatrolDirection();
+    }
+
+    private void Awake()
+    {
         if (EnemyAK == true)
         {
             BalaArma = balaAK;
+            weaponsound = 0;
         }
         else if (EnemyUMP == true)
         {
+            weaponsound = 1;
             BalaArma = balaUMP;
         }
         else if (EnemyEAGLE == true)
         {
+            weaponsound = 2;
             BalaArma = balaEAGLE;
         }
         else if (EnemyGLOCK == true)
         {
+            weaponsound = 3;
             BalaArma = balaAKGLOCK;
         }
     }
@@ -119,6 +132,7 @@ public class Inimigo : MonoBehaviour
                 {
                     GameObject bullet = Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
                     Rigidbody2D bulletRb = bullet.GetComponent<Rigidbody2D>();
+                    PlaySoundWeapons(weaponsound);
                     bulletRb.velocity = transform.up * 15f;
                     yield return new WaitForSeconds(0.2f);
                     BalaArma--;
@@ -176,6 +190,11 @@ public class Inimigo : MonoBehaviour
             life -= 3;
             Destroy(col.gameObject);
         }
+    }
+    private void PlaySoundWeapons(int n)
+    {
+        Source.clip = Audios[n];
+        Source.Play();
     }
     void dead()
     {

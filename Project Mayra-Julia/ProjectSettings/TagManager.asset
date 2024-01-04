@@ -11,6 +11,8 @@ TagManager:
   - EAGLE
   - GLOCK
   - AK
+  - Armadura
+  - Bandagem
   layers:
   - Default
   - TransparentFX
